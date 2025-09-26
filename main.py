@@ -4,6 +4,11 @@ import json
 import pandas as pd
 import logging
 from keys.api_key import get_api_key
+from datetime import datetime, timedelta
+
+data_de_extração = datetime.now().strftime("%Y-%m-%d")
+end_time = datetime.now()
+start_time = (datetime.now() + timedelta(-1)).date()
 
 API_KEY = os.getenv("API_KEY_STOCK")
 
