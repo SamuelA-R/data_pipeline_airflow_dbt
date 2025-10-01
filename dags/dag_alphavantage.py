@@ -1,41 +1,30 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-from airflow.utils.dates import days_ago
-from datetime import timedelta
-
-# importa funções da camada de coleta
+from airflow.decorators import dag, task
+from datetime import datetime, timedelta
 from tasks.coleta import dados_tesouro, fetch_stock_data, captura_indicadores_tecnicos
 
-# Parâmetros padrão para todas as tarefas
-default_args = {
-    "retries": 3,                     # número de tentativas em caso de falha
-    "retry_delay": timedelta(minutes=5),  # intervalo entre tentativas
-}
+default_args = {"retries": 3, "retry_delay": timedelta(minutes=5)}
 
-with DAG(
+@dag(
     dag_id="dag_alphavantage",
-    start_date=days_ago(1),
+    start_date=datetime(2025,1,1),
     schedule_interval="@daily",
     catchup=False,
     default_args=default_args,
     tags=["alpha_vantage", "mercado", "tesouro"],
-) as dag:
+)
+def dag_alphavantage():
+    @task
+    def coleta_tesouro():
+        return dados_tesouro()
 
-    coleta_tesouro = PythonOperator(
-        task_id="coleta_tesouro",
-        python_callable=dados_tesouro,
-    )
+    @task
+    def coleta_tickers():
+        return fetch_stock_data()
 
-    coleta_tickers = PythonOperator(
-        task_id="coleta_tickers",
-        python_callable=fetch_stock_data,
-    )
+    @task
+    def coleta_indicadores():
+        return captura_indicadores_tecnicos()
 
-    coleta_indicadores = PythonOperator(
-        task_id="coleta_indicadores",
-        python_callable=captura_indicadores_tecnicos,
-    )
+    coleta_tesouro() >> coleta_tickers() >> coleta_indicadores()
 
-    # fluxo: tesouro -> tickers -> indicadores
-    coleta_tesouro >> coleta_tickers >> coleta_indicadores
-
+dag_instance = dag_alphavantage()
