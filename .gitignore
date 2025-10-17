@@ -13,6 +13,9 @@ __pycache__/
 *.sqlite
 *.out
 
+# Data files
+*.json
+
 
 # Pastas do Airflow
 temp/
