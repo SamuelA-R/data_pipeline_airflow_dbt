@@ -1,0 +1,21 @@
+.venv
+keys/
+__pycache__/
+# Airflow e Docker
+logs/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+*.pid
+*.swp
+*.db
+*.sqlite
+*.out
+
+
+# Pastas do Airflow
+temp/
+dags/__pycache__/
+plugins/__pycache__/
+dags/tasks/__pycache__/
