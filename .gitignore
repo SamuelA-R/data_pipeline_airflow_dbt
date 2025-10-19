@@ -1,5 +1,6 @@
 .venv
 keys/
+temp_data/
 __pycache__/
 # Airflow e Docker
 logs/

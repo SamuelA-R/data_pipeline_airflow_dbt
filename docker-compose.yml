@@ -61,7 +61,7 @@ services:
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/config_airflow:/opt/airflow/config_airflow
-      - ./airflow/data:/opt/airflow/data
+      - ./airflow/temp_data:/opt/airflow/temp_data
     command: ['airflow', 'standalone']
 
 volumes:
