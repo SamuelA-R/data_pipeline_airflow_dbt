@@ -32,39 +32,18 @@ def dag_alphavantage():
         return captura_indicadores_tecnicos(INDICADORES=INDICADORES, TICKERS=TICKERS)
     
     @task
-    def upload_to_minio_tickers():
-        upload_tickers = MinIOConnect.connect_and_upload_files_to_minio(
-            bucket_name="bronze",
-            list_file_name=TICKERS,
-            base_path="/opt/airflow/tem_data",
-            object_name=None,
-            date_today=date_today
+    def upload_dados():
+        minio = MinIOConnect(
+            endpoint_url="http://minio:9000",
+            access_key="minioadmin",
+            secret_key="minio@1234!"
         )
-        return upload_tickers
-    
-    @task
-    def upload_to_minio_indicadores():
-        upload_indicadores = MinIOConnect.connect_and_upload_files_to_minio(
+        return minio.connect_and_upload_files_to_minio(
             bucket_name="bronze",
-            list_file_name=INDICADORES,
-            base_path="/opt/airflow/tem_data",
-            object_name=None,
-            date_today=date_today
-        )
-        return upload_indicadores
-    
-    @task
-    def upload_to_minio_tesouro():
-        upload_tesouro = MinIOConnect.connect_and_upload_files_to_minio(
-            bucket_name="bronze",
-            list_file_name=["tesouro-{date_today}.json"],
-            base_path="/opt/airflow/tem_data",
-            object_name=None,
-            date_today=date_today
-        )
-        return upload_tesouro
+            base_path="/opt/airflow/temp_data"
+    )
 
-    coleta_tesouro() >> coleta_tickers() >> coleta_indicadores() 
+    upload_dados()
 
 
 dag_instance = dag_alphavantage()
