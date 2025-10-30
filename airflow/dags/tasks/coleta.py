@@ -48,4 +48,3 @@ def captura_indicadores_tecnicos(TICKERS, INDICADORES):
     return "Indicadores técnicos salvos"
 
 
-
