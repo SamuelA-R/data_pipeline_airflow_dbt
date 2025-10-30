@@ -11,8 +11,8 @@ class MinIOConnect:
         )
 
     def connect(self):
-        bucket_names = ["bronze", "silver", "gold"]
-        for name in bucket_names:
+        bucket_name = ["bronze"]
+        for name in bucket_name:
             try:
                 self.s3.head_bucket(Bucket=name)
                 print(f"Bucket '{name}' já existe.")
@@ -38,5 +38,3 @@ class MinIOConnect:
         self.connect()
         self.upload_file(bucket_name=bucket_name, base_path=base_path)
         return "Upload concluído"
-
-

@@ -1,7 +1,7 @@
 from airflow.decorators import dag, task
 from airflow.utils.task_group import TaskGroup
 from datetime import datetime, timedelta
-from tasks.coleta import dados_tesouro, fetch_stock_data, captura_indicadores_tecnicos
+from tasks.coleta import dados_tesouro, fetch_stock_data, captura_indicadores_tecnicos, limpar_pasta_temporaria 
 from tasks.connect_to_minIO import MinIOConnect
 
 date_today = datetime.now().strftime("%Y-%m-%d")
@@ -52,9 +52,23 @@ def dag_alphavantage():
             )
 
         upload_dados()
+    
+    with TaskGroup("group_upload_mariadb", tooltip="Upload dos dados para o MariaDB") as group_upload_mariadb:
+
+        @task
+        def upload_to_mariadb():
+            # Lógica para upload dos dados para o MariaDB
+            print("Upload dos dados para o MariaDB concluído.")
+            return "Upload para MariaDB concluído"
+        
+        @task
+        def limpar_dados_temp():
+            return limpar_pasta_temporaria()
+
+        limpar_dados_temp()
 
     #Dependência entre os grupos
-    group_coleta_dados >> group_upload_minio
+    group_coleta_dados >> group_upload_minio >> group_upload_mariadb
 
 
 dag_instance = dag_alphavantage()
