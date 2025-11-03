@@ -33,11 +33,10 @@ services:
       POSTGRES_PASSWORD: airflow_123
       POSTGRES_DB: airflow
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_airflow_data:/var/lib/postgresql/data
     
-
 
   airflow:
     build:
@@ -63,7 +62,37 @@ services:
       - ./airflow/config_airflow:/opt/airflow/config_airflow
       - ./airflow/temp_data:/opt/airflow/temp_data
     command: ['airflow', 'standalone']
+  
+  #mariadb:
+  #  image: mariadb:10
+  #  container_name: local_mariadb
+  #  restart: always  # ✅ garante reinício automático em caso de falha
+  #  environment:
+  #    MYSQL_ROOT_PASSWORD: root_password
+  #    MYSQL_DATABASE: datawarehouse
+  #    MYSQL_USER: postgres
+  #    MYSQL_PASSWORD: postgres
+  #  ports:
+  #    - "3307:3306"  # ✅ sem conflito com PostgreSQL
+  #  volumes:
+  #    - mariadb_data:/var/lib/mysql
+
+  postgres-dw:
+    image: postgres:15
+    container_name: postgres-dw
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: datawarehouse
+    ports:
+      - "5434:5432"  # Porta externa 5434 (para não conflitar com os outros Postgres)
+    volumes:
+      - postgres_dw_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
+  postgres_airflow_data:
   minio_data:
+  mariadb_data:
+  postgres_dw_data:
